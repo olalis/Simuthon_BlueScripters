@@ -1,4 +1,4 @@
-# Simuthon_BlueScripters
+# Simuthon_BlueScripters TASK 1
 
 Wideo prezentacja grupy: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
