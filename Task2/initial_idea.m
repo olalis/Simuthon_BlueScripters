@@ -7,13 +7,16 @@ load("Training Dataset\Task_2_Training_Dataset.mat");
 dataImageDataBase = imageDatastore("Training Dataset\WBA*.png");
 
 %% Variables init
-differenceBetweenRectangles = zeros(128,4);
-isValidRectangle = zeros(128,1);
+num_image = size(dataImageDataBase.Files);
+num_image = num_image(:, 1);
+
+differenceBetweenRectangles = zeros(num_image,4);
+isValidRectangle = zeros(num_image,1);
 %% Prepare gTruth data
-for i = 1:143
+for i = 1:num_image
     wrong_size{i} = Task_2_Training_Data(i).BoundingBox;
 end
-BoundingBox = reshape(wrong_size, 143, 1);
+BoundingBox = reshape(wrong_size, num_image, 1);
 
 gtSource = groundTruthDataSource(dataImageDataBase);
 ldc = labelDefinitionCreator;
@@ -34,22 +37,26 @@ trainingData = combine(images, labels);
 % im = insertObjectAnnotation(im, "rectangle",bb,"Sign");
 % imshow(im)
 
-detectorACF = trainACFObjectDetector(trainingData, NegativeSamplesFactor=1);
+detectorACF = trainACFObjectDetector(trainingData, ObjectTrainingSize = [50, 50], NumStages=6, NegativeSamplesFactor=17, MaxWeakLearners=5000);
 
 %%
+valid = 0;
+for i = 1:1:length(images.Files)
+    i
+    im = imread(images.Files{i});
+
+    [foundBoundingBox, matchScore] = detect(detectorACF, im);
+    new_bb{i} = foundBoundingBox;
+    if (foundBoundingBox)
+        valid = valid + check_size(BoundingBox{i}, foundBoundingBox);
+    end
+end
+%% 
+saveToFile.Image = images.Files
+saveToFile.BoundingBox = reshape(new_bb, 143, 1);
+save("saveToFile.mat", "saveToFile")
+%% 
 im = imread(images.Files{66});
 [foundBoundingBox, matchScore] = detect(detectorACF, im)
-
-% for i = 1:1:length(images.Files)
-% 
-%     im = imread(images.Files{i});
-% 
-%     [foundBoundingBox, matchScore] = detect(detectorACF, im);
-% 
-%     differenceBetweenRectangles(i, :) = BoundingBox{i} - foundBoundingBox;
-% 
-%     isValidRectangle(i) = (differenceBetweenRectangles(i, 1) < 10 & ...
-%                             differenceBetweenRectangles(i, 2) < 10 & ...
-%                             differenceBetweenRectangles(i, 3) < 10 & ...
-%                             differenceBetweenRectangles(i, 4) < 10);
-% end
+im = insertObjectAnnotation(im, 'rectangle', foundBoundingBox, 'sign');
+imshow(im);
