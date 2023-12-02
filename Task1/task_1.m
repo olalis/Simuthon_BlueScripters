@@ -17,9 +17,11 @@ function path = task_1(map, startPoint, stopPoint)
     costMap_normalized = costMap./max(max(costMap)); % Need to be normalized to 0-1 value
 
     % Planner A*
-    costMap_normalized = costMap_normalized*0.99;
+    costMap_normalized = costMap_normalized*0.98;
     costMap_normalized(costMap_normalized==0) = 1;
     occCostMap = occupancyMap(costMap_normalized);
+    occCostMap.OccupiedThreshold = 0.99;
+    occCostMap.FreeThreshold = 0.1;
 
     planner = plannerAStarGrid(occCostMap);
     path = plan(planner,startPoint,stopPoint);
