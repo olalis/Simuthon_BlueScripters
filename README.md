@@ -7,3 +7,4 @@ Link to task_1.m file: https://github.com/olalis/Simuthon_BlueScripters/blob/mai
 
 ## Task 2
 Link to Task_2_Main.m file: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/Task_2_Main.m
+Link to check_size.m file: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/check_size.m
