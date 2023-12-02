@@ -1,3 +1,4 @@
+% Function to validate received results
 function [result] = check_size(original, calculated)
     result = 1;
     size_calc = size(calculated);
