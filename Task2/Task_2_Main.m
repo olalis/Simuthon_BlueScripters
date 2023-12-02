@@ -1,62 +1,32 @@
 clc; clear all; close all;
 
-%% Load training data set
-load("Training Dataset\Task_2_BlueScripters.mat");
+%% Setting path
+% variable 'folder_path' should be adjusted to Your training dataset folder
+% variable 'mat_file_name' should be adjusted to 
+% .mat file withBoundingBoxes
+folder_path = "C:\Users\karol\Desktop\Simuthon\Simuthon_BlueScripters\Task2\Training Dataset";
+mat_file_name = "Task_2_Training_Dataset.mat";
+addpath(folder_path);
+load(mat_file_name);
+load('detector.mat');
 
-%% Load image data base
-dataImageDataBase = imageDatastore("Training Dataset\WBA*.png");
+%% Load image database
+dataImageDataBase = imageDatastore(folder_path, "FileExtensions", ".png");
 
 %% Variables init
-num_image = size(dataImageDataBase.Files);
-num_image = num_image(:, 1);
+num_image = length(dataImageDataBase.Files);
+calculatedBoundingBox = repmat({zeros(1, 4)}, 1, num_image);
+BoundingBox = extract_boxes(Task_2_Training_Data);
 
-differenceBetweenRectangles = zeros(num_image,4);
-isValidRectangle = zeros(num_image,1);
-%% Prepare gTruth data
+%% Detection using ACF detector
 for i = 1:num_image
-    wrong_size{i} = Task_2_Training_Data(i).BoundingBox;
+    im = readimage(dataImageDataBase,i);
+    foundBoundingBox = detect(detectorACF, im);
+    calculatedBoundingBox{i} = foundBoundingBox;
+    saveToFile(i).Image = char(dataImageDataBase.Files(i));
+    saveToFile(i).BoundingBox = calculatedBoundingBox{i};
 end
-BoundingBox = reshape(wrong_size, num_image, 1);
 
-gtSource = groundTruthDataSource(dataImageDataBase);
-ldc = labelDefinitionCreator;
-addLabel(ldc, 'Sign', labelType.Rectangle);
-labelDefs = create(ldc);
-labelNames = {'Sign'};
-labelData = table(BoundingBox, 'VariableNames', labelNames);
-gTruth = groundTruth(gtSource, labelDefs, labelData);
+%% Save output
+save("Task_2_BlueScripters.mat", "saveToFile")
 
-%% Training Detector with function
-
-[images, labels] = objectDetectorTrainingData(gTruth, SamplingFactor=1);
-
-trainingData = combine(images, labels);
-
-% im = imread(images.Files{1});
-% bb = labels.LabelData{1,1};
-% im = insertObjectAnnotation(im, "rectangle",bb,"Sign");
-% imshow(im)
-
-detectorACF = trainACFObjectDetector(trainingData, ObjectTrainingSize = [50, 50], NumStages=6, NegativeSamplesFactor=17, MaxWeakLearners=5000);
-
-%%
-valid = 0;
-for i = 1:1:length(images.Files)
-    i
-    im = imread(images.Files{i});
-
-    [foundBoundingBox, matchScore] = detect(detectorACF, im);
-    new_bb{i} = foundBoundingBox;
-    if (foundBoundingBox)
-        valid = valid + check_size(BoundingBox{i}, foundBoundingBox);
-    end
-end
-%% 
-saveToFile.Image = images.Files
-saveToFile.BoundingBox = reshape(new_bb, 143, 1);
-save("saveToFile.mat", "saveToFile")
-%% 
-im = imread(images.Files{66});
-[foundBoundingBox, matchScore] = detect(detectorACF, im)
-im = insertObjectAnnotation(im, 'rectangle', foundBoundingBox, 'sign');
-imshow(im);
