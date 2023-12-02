@@ -10,7 +10,8 @@ Link to documentation: https://github.com/olalis/Simuthon_BlueScripters/blob/mai
 Link to Task_2_Main.m file: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/Task_2_Main.m    
 Link to extract_boxes.m file: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/extract_boxes.m    
 Link to detector.mat file: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/detector.mat    
-Link to teaching problem: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/detector.mat
+Link to detector_training.m: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/detector_training.m
+Link to check_size.m: https://github.com/olalis/Simuthon_BlueScripters/blob/main/Task2/check_size.m
 
 
 
